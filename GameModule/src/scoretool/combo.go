@@ -12,14 +12,17 @@ type WayGameEachWay struct {
 	Symbol       int
 	Combo        int
 	Linequantity int
+	Score        int
 }
 
 type Line_Game_Combo struct {
 	LineGameComboResult [info.Linenum]LineGameEachWay
 }
 type LineGameEachWay struct {
-	Symbol int
-	Combo  int
+	ResultLine [info.Reelamount]int
+	Symbol     int
+	Combo      int
+	Score      int
 }
 
 func (result *Line_Game_Combo) CombojudgeLineGame(panel [info.Col][info.Reelamount]int) {
@@ -31,6 +34,7 @@ func (result *Line_Game_Combo) CombojudgeLineGame(panel [info.Col][info.Reelamou
 
 			resultline[reel] = panel[lineindex][reel]
 		}
+		result.LineGameComboResult[index].ResultLine = resultline
 
 		comboquantity := 1
 

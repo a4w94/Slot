@@ -4,14 +4,20 @@ import (
 	"fmt"
 	"math/rand"
 	"package/src/Statistic"
+	"package/src/calculate/allcombo"
 	"package/src/info"
 	"package/src/public"
 	scoretools "package/src/scoretool"
 	"package/src/table"
 	"time"
+
+	"github.com/schollz/progressbar/v3"
 )
 
-var Session int
+var (
+	Session         int
+	AllComboControl bool = true
+)
 
 type TotalRoundResultRate struct {
 
@@ -34,8 +40,7 @@ type TotalRoundResultRate struct {
 	ScoreHitRate float64
 
 	//擴充
-	SymbolComboTotalHitTimes_Rate Statistic.StatisticTable_Rate
-	SymbolComboTotalScore_RTP     Statistic.StatisticTable_Rate
+	SymbolComboTotalHit Statistic.StatisticTable_Rate
 }
 
 type TotalRoundResult struct {
@@ -61,8 +66,8 @@ type TotalRoundResult struct {
 	FreeGameTotal_MultipleRange_ScoreAcc [scoretools.MutipelRange]int //倍率區間分數累加
 
 	//擴充
-	SymbolComboTotalHitTimes Statistic.StatisticTable
-	SymbolComboTotalScore    Statistic.StatisticTable
+	SymbolComboTotalHit Statistic.StatisticTable
+	AllComboPanel       []allcombo.Panel
 }
 
 type EachRoundResult struct {
@@ -130,25 +135,39 @@ func (result *TotalRoundResultRate) TotalRate(input TotalRoundResult) {
 
 	//擴充
 	//-->計算Main Game各個symbol combol hit rate
-	for i := 0; i < len(result.SymbolComboTotalHitTimes_Rate.NG); i++ {
-		for j := 0; j < len(result.SymbolComboTotalHitTimes_Rate.NG[i]); j++ {
-			result.SymbolComboTotalHitTimes_Rate.NG[i][j] = div(input.SymbolComboTotalHitTimes.NG[i][j], Session)
+	for i := 0; i < len(result.SymbolComboTotalHit.NGHitRate); i++ {
+		for j := 0; j < len(result.SymbolComboTotalHit.NGHitRate[i]); j++ {
+			result.SymbolComboTotalHit.NGHitRate[i][j] = div(input.SymbolComboTotalHit.NGHit[i][j], Session)
 		}
 	}
 
 	//-->計算Main Game各個symbol combol RTP
-	for i := 0; i < len(result.SymbolComboTotalScore_RTP.NG); i++ {
-		for j := 0; j < len(result.SymbolComboTotalScore_RTP.NG[i]); j++ {
-			result.SymbolComboTotalScore_RTP.NG[i][j] = div(input.SymbolComboTotalScore.NG[i][j], input.TotalBet)
+	for i := 0; i < len(result.SymbolComboTotalHit.NGRTP); i++ {
+		for j := 0; j < len(result.SymbolComboTotalHit.NGRTP[i]); j++ {
+			result.SymbolComboTotalHit.NGRTP[i][j] = div(input.SymbolComboTotalHit.NGScore[i][j], input.TotalBet)
 		}
 	}
 
 }
 
 func (result *TotalRoundResult) TotalRound() {
+	alllen := 1
+	for _, m := range public.Ngstritable {
+		alllen *= len(m)
+	}
+	bar := progressbar.Default(int64(alllen))
+	if AllComboControl == true {
+		result.AllComboPanel = allcombo.ProductAllPanel()
+		Session = len(result.AllComboPanel)
+	}
 
 	for i := 0; i < Session; i++ {
+		bar.Add(1)
 		var each_Round_Result EachRoundResult
+
+		if AllComboControl == true {
+			each_Round_Result.MainGame.Panel = result.AllComboPanel[i].P
+		}
 		each_Round_Result.EachRound()
 
 		//累加
@@ -192,15 +211,18 @@ func (result *TotalRoundResult) TotalRound() {
 
 		//擴充
 		//-->main game 計算各symbol combo 次數
-		if info.GameMode == info.GameStatus.MainGame {
-			result.SymbolComboTotalHitTimes.SymbolHitTimes_WayGame(info.GameStatus.MainGame, each_Round_Result.MainGame.Way_Game_Combo, each_Round_Result.MainGame.ScatterResult)
-		} else if info.GameMode == info.GameStatus.FreeGame {
-			result.SymbolComboTotalHitTimes.SymbolHitTimes_LineGame(info.GameStatus.MainGame, each_Round_Result.MainGame.Line_Game_Combo, each_Round_Result.MainGame.ScatterResult)
+		//-->main game 計算各symbol combo 總分
+		if info.GameMode == info.GameStatus.WayGame {
+			result.SymbolComboTotalHit.SymbolHit_WayGame(info.GameStatus.MainGame, each_Round_Result.MainGame.Way_Game_Combo, each_Round_Result.MainGame.ScatterResult)
+		} else if info.GameMode == info.GameStatus.LineGame {
+			result.SymbolComboTotalHit.SymbolHit_LineGame(info.GameStatus.MainGame, each_Round_Result.MainGame.Line_Game_Combo, each_Round_Result.MainGame.ScatterResult)
 		} else {
 			fmt.Println("Wrong Mode")
 		}
-		//-->main game 計算各symbol combo 總分
-		result.SymbolComboTotalScore.SymbolTotalScore(info.GameStatus.MainGame, result.SymbolComboTotalHitTimes)
+
+	}
+	for i, m := range result.SymbolComboTotalHit.NGHit {
+		fmt.Println(table.Game.PayTableSymbol[i], m)
 	}
 
 }
@@ -214,7 +236,9 @@ func (result *EachRoundResult) EachRound() {
 		result.FreeGame.FreeGame()
 
 	}
-
+	if result.MainGame.TotalScore > 0 {
+		//result.MainGame.PrintEachRoudResult()
+	}
 	//計算
 	//Main Game
 	//-->總分倍率區間index

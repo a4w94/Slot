@@ -8,7 +8,7 @@ type Name struct {
 }
 
 func main() {
-	calculate.Simulate(10, 965)
+	calculate.Simulate(1, 965)
 	//製圖
 	//chart.WriteDataChart()
 

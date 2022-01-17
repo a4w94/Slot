@@ -5,6 +5,7 @@ import (
 	"os"
 	scoretools "package/src/scoretool"
 	"package/src/table"
+	"reflect"
 	"strconv"
 
 	"github.com/olekukonko/tablewriter"
@@ -37,6 +38,7 @@ func (result *TotalRoundResultRate) PrintResult() {
 
 		func() {
 			data := [][]string{
+				[]string{"Main Game Without Scatter RTP", toString(result.MainGameRTP_with_scatter - result.MainGame_ScatterRTP)},
 				[]string{"Free Game Hit Rate", toString(result.MainGame_TriggeFree_Rate)},
 				[]string{"Scatter RTP", toString(result.MainGame_ScatterRTP)},
 			}
@@ -82,8 +84,8 @@ func (result *TotalRoundResultRate) PrintResult() {
 
 			for i := 1; i < len(table.Game.PayTableSymbol); i++ {
 				tmp := []string{table.Game.PayTableSymbol[i]}
-				for j := 1; j < len(result.SymbolComboTotalHitTimes_Rate.NG[i]); j++ {
-					tmp = append(tmp, toString(result.SymbolComboTotalHitTimes_Rate.NG[i][j]))
+				for j := 1; j < len(result.SymbolComboTotalHit.NGHitRate[i]); j++ {
+					tmp = append(tmp, toString(result.SymbolComboTotalHit.NGHitRate[i][j]))
 				}
 				data = append(data, tmp)
 			}
@@ -106,10 +108,10 @@ func (result *TotalRoundResultRate) PrintResult() {
 			for i := 1; i < len(table.Game.PayTableSymbol); i++ {
 				tmp := []string{table.Game.PayTableSymbol[i]}
 				var symboltotalrtp float64
-				for j := 1; j < len(result.SymbolComboTotalScore_RTP.NG[i]); j++ {
-					tmp = append(tmp, toString(result.SymbolComboTotalScore_RTP.NG[i][j]))
-					symboltotalrtp += result.SymbolComboTotalScore_RTP.NG[i][j]
-					totalrtp += result.SymbolComboTotalScore_RTP.NG[i][j]
+				for j := 1; j < len(result.SymbolComboTotalHit.NGRTP[i]); j++ {
+					tmp = append(tmp, toString(result.SymbolComboTotalHit.NGRTP[i][j]))
+					symboltotalrtp += result.SymbolComboTotalHit.NGRTP[i][j]
+					totalrtp += result.SymbolComboTotalHit.NGRTP[i][j]
 				}
 				tmp = append(tmp, toString(symboltotalrtp))
 				data = append(data, tmp)
@@ -186,4 +188,13 @@ func (result *TotalRoundResultRate) PrintResult() {
 	FreeGame()
 	fmt.Println()
 
+}
+
+func (result MainGameEachRoundResult) PrintEachRoudResult() {
+	t := reflect.TypeOf(result)
+	v := reflect.ValueOf(result)
+	for i := 0; i < t.NumField(); i++ {
+		fmt.Println(t.Field(i).Name, ":", v.Field(i))
+	}
+	fmt.Println()
 }

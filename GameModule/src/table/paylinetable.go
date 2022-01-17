@@ -63,9 +63,9 @@ func getScatterInfo() {
 			{ScatterAmount: 0, PayMutiple: 0, FGSession: 0},
 			{ScatterAmount: 1, PayMutiple: 0, FGSession: 0},
 			{ScatterAmount: 2, PayMutiple: 0, FGSession: 0},
-			{ScatterAmount: 3, PayMutiple: 5, FGSession: 0},
+			{ScatterAmount: 3, PayMutiple: 2, FGSession: 0},
 			{ScatterAmount: 4, PayMutiple: 10, FGSession: 0},
-			{ScatterAmount: 5, PayMutiple: 100, FGSession: 0},
+			{ScatterAmount: 5, PayMutiple: 200, FGSession: 0},
 		},
 		FGScatterInfo: []ScatterInfo{
 			{ScatterAmount: 0, PayMutiple: 0, FGSession: 0},

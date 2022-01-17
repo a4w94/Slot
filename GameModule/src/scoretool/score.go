@@ -14,28 +14,20 @@ type ScatterResult struct {
 	Fgsession     int
 }
 
-type Way_Game_Score struct {
-	ScoreWithoutScatter int
-}
-
-type Line_Game_Score struct {
-	LinePay             [info.Linenum]int
-	ScoreWithoutScatter int
-}
-
-func (result *Way_Game_Score) WayGameScore(input Way_Game_Combo) {
-	for _, k := range input.WayGameComboResult {
+func (result *Way_Game_Combo) WayGameScore() {
+	for index := 0; index < len(result.WayGameComboResult); index++ {
+		k := result.WayGameComboResult[index]
 		score := table.Game.PayTable[k.Symbol][k.Combo] * k.Linequantity * info.PlayBetLevel
-		result.ScoreWithoutScatter += score
+		result.WayGameComboResult[index].Score = score
 	}
+
 }
 
-func (result *Line_Game_Score) LineGameScore(input Line_Game_Combo) {
-	for index, k := range input.LineGameComboResult {
-		score := table.Game.PayTable[k.Symbol][k.Combo]
-
-		result.LinePay[index] += score
-		result.ScoreWithoutScatter += score
+func (result *Line_Game_Combo) LineGameScore() {
+	for index := 0; index < len(result.LineGameComboResult); index++ {
+		k := result.LineGameComboResult[index]
+		score := table.Game.PayTable[k.Symbol][k.Combo] * info.PlayBetLevel
+		result.LineGameComboResult[index].Score = score
 	}
 
 }

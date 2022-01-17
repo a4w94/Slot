@@ -5,10 +5,10 @@ import "fmt"
 const (
 
 	///遊戲名稱///
-	GameName string = "極樂盤絲洞"
+	GameName string = "舞動峇里島"
 
 	///遊戲模式///
-	GameMode string = "WayGame"
+	GameMode string = "LineGame"
 
 	Retrigger = false
 
@@ -18,7 +18,7 @@ const (
 	Col int = 3
 
 	///基本投注額Bet///
-	Bet int = 50
+	Bet int = 2
 
 	PlayBetLevel = 1
 	//玩家下注額
@@ -28,15 +28,15 @@ const (
 	Linenum int = 1
 
 	///獎圖總數+1 沒有零號///
-	Symbolamount int = 11
+	Symbolamount int = 13
 
 	///combo數目0~5combo///
 	Comboresultnum int = 6
 
 	///WILD 代號///
-	Wild int = 9
+	Wild int = 12
 	///Scatter 代號///
-	Scatter int = 10
+	Scatter int = 11
 
 	// Bonus int = 11
 
