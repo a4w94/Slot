@@ -2,9 +2,11 @@ package calculate
 
 import (
 	"fmt"
+	"math/rand"
 	"package/src/info"
 	tools "package/src/rngtools"
 	scoretools "package/src/scoretool"
+	"package/src/table"
 )
 
 var RTP int
@@ -23,7 +25,7 @@ type MainGameEachRoundResult struct {
 	FreeTriggerStatus bool
 
 	//擴充
-
+	BonusTriggerStatus bool
 }
 
 type FreeGameTotalResult struct {
@@ -50,6 +52,10 @@ type FreeGameEachRoundResult struct {
 
 	//擴充
 
+}
+
+type Bonus struct {
+	Panel [][]int
 }
 
 func (result *MainGameEachRoundResult) MainGame() {
@@ -202,6 +208,79 @@ func (result *FreeGameEachRoundResult) EachRoundFreeGame() {
 
 }
 
-func BonusGame() {
+func (result *MainGameEachRoundResult) Chech_Enter_Bonus() {
 
+	if result.Panel[0][0] == 1 && result.Panel[1][0] == 1 && result.Panel[2][0] == 1 && result.Panel[3][0] == 1 {
+		result.BonusTriggerStatus = true
+	}
+
+}
+
+func (result *MainGameEachRoundResult) BonusGame() {
+
+	var panel [][]int
+	for _, m := range result.Panel {
+		var arr []int
+		for _, k := range m {
+			if k == 1 || k == info.Wild {
+				arr = append(arr, 1)
+			} else if k == info.Scatter {
+				arr = append(arr, info.Scatter)
+			} else {
+				arr = append(arr, info.Space)
+			}
+
+		}
+		panel = append(panel, arr)
+	}
+	fmt.Println("Enter Panel")
+	for _, m := range panel {
+		fmt.Println(m)
+	}
+	fmt.Println()
+	//for round := 0; round < 3; round++ {
+
+	for i, m := range panel {
+		for j, k := range m {
+			if k == info.Scatter {
+				panel = append(panel, []int{})
+				panel[i][j] = info.Space
+			}
+		}
+	}
+
+	fmt.Println("AfterGrowPanel")
+	for _, m := range panel {
+		fmt.Println(m)
+	}
+	// }
+}
+
+func GenerateBonu(gamestatus string, resultlen int) {
+	randpanel := func(table [info.Reelamount][]int) [][]int {
+		var panel [][]int
+		var index []int
+		for i := 0; i < info.Reelamount; i++ {
+			randnumber := rand.Intn(len(table[i]))
+			index = append(index, randnumber)
+		}
+
+		for i := 0; i < resultlen; i++ {
+			var arr []int
+			for k := 0; k < len(index); k++ {
+				symbolindex := (index[k] + i) % len(table[k])
+				arr = append(arr, table[k][symbolindex])
+			}
+			panel = append(panel, arr)
+		}
+		return panel
+	}
+	switch gamestatus {
+	case info.GameStatus.MainGame:
+		result := randpanel(table.Game.NGBonusTable965)
+		for _, m := range result {
+			fmt.Println(m)
+		}
+
+	}
 }

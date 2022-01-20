@@ -17,6 +17,7 @@ type GameTabel struct {
 	PayTable       [info.Symbolamount][info.Comboresultnum]int
 	LineTable      [info.Linenum][info.Reelamount]int
 	Scatter
+	BonusTable
 }
 
 type GameStriTable struct {
@@ -27,6 +28,16 @@ type GameStriTable struct {
 	FGStriTablertp95  [info.Reelamount][]int
 	FGStriTablertp965 [info.Reelamount][]int
 	FGStriTablertp99  [info.Reelamount][]int
+}
+
+type BonusTable struct {
+	NGBonusTable95  [info.Reelamount][]int
+	NGBonusTable965 [info.Reelamount][]int
+	NGBonusTable99  [info.Reelamount][]int
+
+	FGBonusTable95  [info.Reelamount][]int
+	FGBonusTable965 [info.Reelamount][]int
+	FGBonusTable99  [info.Reelamount][]int
 }
 
 var Excelroutieng = "parsheet/ngparsheet.xlsx"
@@ -78,6 +89,12 @@ func Init() {
 	printTable("FG", "95", Game.FGStriTablertp95)
 	printTable("FG", "99", Game.FGStriTablertp99)
 
+	printTable("NGBG", "95", Game.NGBonusTable95)
+	printTable("NGBG", "965", Game.NGBonusTable965)
+	printTable("NGBG", "99", Game.NGBonusTable99)
+	printTable("FGBG", "95", Game.FGBonusTable95)
+	printTable("FGBG", "965", Game.FGBonusTable965)
+	printTable("FGBG", "99", Game.FGBonusTable99)
 }
 
 func Error(err error) {
@@ -154,6 +171,40 @@ func getexcelparsheet(xlsxng, xlsxfg *excelize.File) {
 			*temp = stritable
 		case "99":
 			temp := &Game.FGStriTablertp99
+			*temp = stritable
+		}
+
+	}
+
+	//NG Bonus
+	for i := 0; i < len(rtproutie); i++ {
+		rowng := xlsxng.GetRows("Bonus" + rtproutie[i])
+
+		stritable := [info.Reelamount][]int{}
+
+		for i := 0; i < len(rowng); i++ {
+			for k := 0; k < len(rowng[i]); k++ {
+				if rowng[i][k] == "" {
+					continue
+				} else {
+					element, err := strconv.Atoi(rowng[i][k])
+					if err != nil {
+						panic(err)
+					}
+					stritable[k] = append(stritable[k], element)
+				}
+
+			}
+		}
+		switch rtproutie[i] {
+		case "95":
+			temp := &Game.BonusTable.NGBonusTable95
+			*temp = stritable
+		case "965":
+			temp := &Game.BonusTable.NGBonusTable965
+			*temp = stritable
+		case "99":
+			temp := &Game.BonusTable.NGBonusTable99
 			*temp = stritable
 		}
 

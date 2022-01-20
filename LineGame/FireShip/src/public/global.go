@@ -16,6 +16,8 @@ var (
 
 	///BG轉輪表///
 
+	NGBonusTable [info.Reelamount][]int
+	FGBonusTable [info.Reelamount][]int
 )
 
 func ChangeGlobalRtpModule(rtp int) {

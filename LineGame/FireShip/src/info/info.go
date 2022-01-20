@@ -15,10 +15,10 @@ const (
 	///Reel 轉輪數///
 	Reelamount int = 5
 
-	Col int = 3
+	Col int = 4
 
 	///基本投注額Bet///
-	Bet int = 2
+	Bet int = 1
 
 	PlayBetLevel = 1
 	//玩家下注額
@@ -28,16 +28,17 @@ const (
 	Linenum int = 1
 
 	///獎圖總數+1 沒有零號///
-	Symbolamount int = 13
+	Symbolamount int = 14
 
 	///combo數目0~5combo///
 	Comboresultnum int = 6
 
 	///WILD 代號///
-	Wild int = 12
+	Wild int = 11
 	///Scatter 代號///
-	Scatter int = 11
+	Scatter int = 12
 
+	Space int = 13
 	// Bonus int = 11
 
 	///理論值ＲＴＰ///

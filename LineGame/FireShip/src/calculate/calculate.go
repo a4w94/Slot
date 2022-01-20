@@ -10,13 +10,11 @@ import (
 	scoretools "package/src/scoretool"
 	"package/src/table"
 	"time"
-
-	"github.com/schollz/progressbar/v3"
 )
 
 var (
 	Session         int
-	AllComboControl bool = true
+	AllComboControl bool = false
 )
 
 type TotalRoundResultRate struct {
@@ -71,6 +69,7 @@ type TotalRoundResult struct {
 }
 
 type EachRoundResult struct {
+	Time time.Time
 	//Main Game
 	MainGame           MainGameEachRoundResult
 	MainGameScoreRange int
@@ -81,6 +80,7 @@ type EachRoundResult struct {
 }
 
 func Simulate(session, rtp int) TotalRoundResultRate {
+	t := time.Now()
 	//初始化資訊
 	table.Init()
 
@@ -94,6 +94,7 @@ func Simulate(session, rtp int) TotalRoundResultRate {
 	TotalTimes.TotalRound()
 	TotalRate.TotalRate(TotalTimes)
 	TotalRate.PrintResult()
+	fmt.Println(time.Since(t))
 	return TotalRate
 }
 
@@ -155,14 +156,14 @@ func (result *TotalRoundResult) TotalRound() {
 	for _, m := range public.Ngstritable {
 		alllen *= len(m)
 	}
-	bar := progressbar.Default(int64(alllen))
+	// bar := progressbar.Default(int64(alllen))
 	if AllComboControl == true {
 		result.AllComboPanel = allcombo.ProductAllPanel()
 		Session = len(result.AllComboPanel)
 	}
 
 	for i := 0; i < Session; i++ {
-		bar.Add(1)
+		// bar.Add(1)
 		var each_Round_Result EachRoundResult
 
 		if AllComboControl == true {
@@ -247,4 +248,5 @@ func (result *EachRoundResult) EachRound() {
 	//-->總分倍率區間index
 	result.FreeGameTotalScoreRange = scoretools.Multiplejudge(result.FreeGame.TotalScore, info.PlayerBet)
 
+	result.Time = time.Now()
 }
