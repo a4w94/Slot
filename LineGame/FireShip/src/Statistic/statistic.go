@@ -59,6 +59,8 @@ func (result *StatisticTable) SymbolHit_LineGame(game_status string, input score
 		}
 		//scatter 計次
 		result.NGHit[info.Scatter][inputScatter.ScatterAmount]++
+		result.NGScore[info.Scatter][inputScatter.ScatterAmount] += inputScatter.Scatterpay
+
 	} else if game_status == info.GameStatus.FreeGame {
 		for _, tmp := range input.LineGameComboResult {
 			result.FGHit[tmp.Symbol][tmp.Combo]++
@@ -67,6 +69,8 @@ func (result *StatisticTable) SymbolHit_LineGame(game_status string, input score
 		}
 		//scatter 計次
 		result.FGHit[info.Scatter][inputScatter.ScatterAmount]++
+		result.FGScore[info.Scatter][inputScatter.ScatterAmount] += inputScatter.Scatterpay
+
 	}
 
 }

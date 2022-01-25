@@ -14,7 +14,7 @@ import (
 func (result *TotalRoundResultRate) PrintResult() {
 	toString := func(input float64) string {
 		//var result string
-		result := strconv.FormatFloat(input*100, 'f', 3, 64) + "%"
+		result := strconv.FormatFloat(input*100, 'f', 4, 64) + "%"
 		return result
 	}
 
@@ -194,7 +194,15 @@ func (result MainGameEachRoundResult) PrintEachRoudResult() {
 	t := reflect.TypeOf(result)
 	v := reflect.ValueOf(result)
 	for i := 0; i < t.NumField(); i++ {
-		fmt.Println(t.Field(i).Name, ":", v.Field(i))
+		if t.Field(i).Name == "Panel" {
+			fmt.Println("Panel")
+			for _, m := range result.Panel {
+				fmt.Println(m)
+
+			}
+		} else {
+			fmt.Println(t.Field(i).Name, ":", v.Field(i))
+		}
 	}
 	fmt.Println()
 }

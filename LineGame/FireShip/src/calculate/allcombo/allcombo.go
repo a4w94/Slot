@@ -25,7 +25,7 @@ func ProductAllPanel() []Panel {
 				for d := 0; d < len(table[3]); d++ {
 					for e := 0; e < len(table[4]); e++ {
 						var r Panel
-						for m := 0; m < 3; m++ {
+						for m := 0; m < info.Col; m++ {
 
 							r.P[m] = [info.Reelamount]int{table[0][(a+m)%len(table[0])], table[1][(b+m)%len(table[1])], table[2][(c+m)%len(table[2])], table[3][(d+m)%len(table[3])], table[4][(e+m)%len(table[4])]}
 						}

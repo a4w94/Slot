@@ -2,7 +2,6 @@ package main
 
 import (
 	"package/src/calculate"
-	"package/src/info"
 )
 
 type Name struct {
@@ -11,7 +10,9 @@ type Name struct {
 }
 
 func main() {
+
 	calculate.Simulate(1, 965)
+
 	// var tmp calculate.MainGameEachRoundResult
 	// tmp.Panel = [info.Col][info.Reelamount]int{
 	// 	{1, 2, 3, 1, 5},
@@ -24,6 +25,9 @@ func main() {
 	//chart.WriteDataChart()
 	//Test()
 
-	calculate.GenerateBonu(info.GameStatus.MainGame, 8)
+	// calculate.GenerateBonus(info.GameStatus.MainGame, 8)
+	// var tmp public.RandWeight
+	// tmp.Rand(table.Game.NGWeight965.RespinScatter)
+	// fmt.Println(tmp)
 
 }

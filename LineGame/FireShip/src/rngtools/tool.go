@@ -45,15 +45,16 @@ func CountPanelScatterAmount(panel [info.Col][info.Reelamount]int) int {
 
 	var scatteramount int
 count:
-	for i := 0; i < info.Col; i++ {
+	for k := 0; k < info.Reelamount; k++ {
 		var reelscatteramount int
+		for i := 0; i < info.Col; i++ {
 
-		for k := 0; k < info.Reelamount; k++ {
 			if panel[i][k] == info.Scatter {
 				scatteramount++
 				reelscatteramount++
 
 			}
+
 		}
 		if reelscatteramount == 0 {
 			break count

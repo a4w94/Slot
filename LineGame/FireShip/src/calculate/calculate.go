@@ -80,8 +80,10 @@ type EachRoundResult struct {
 }
 
 func Simulate(session, rtp int) TotalRoundResultRate {
+
 	t := time.Now()
 	//初始化資訊
+	RTP = rtp
 	table.Init()
 
 	public.ChangeGlobalRtpModule(rtp)
@@ -232,11 +234,21 @@ func (result *EachRoundResult) EachRound() {
 
 	result.MainGame.MainGame()
 
-	if result.MainGame.FreeTriggerStatus == true {
+	if result.MainGame.BonusTriggerStatus {
+		fmt.Println("Enter Bonus")
+		StartBonus(&result.MainGame).BonusGame()
+		fmt.Println("結束盤面")
+		fmt.Println(result.MainGame.Bonus.Panel)
+
+	}
+
+	if result.MainGame.FreeTriggerStatus {
 		result.FreeGame.TotalSession = result.MainGame.Fgsession
 		result.FreeGame.FreeGame()
 
 	}
+
+	//result.MainGame.PrintEachRoudResult()
 	if result.MainGame.TotalScore > 0 {
 		//result.MainGame.PrintEachRoudResult()
 	}

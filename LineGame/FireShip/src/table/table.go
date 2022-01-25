@@ -16,6 +16,7 @@ type GameTabel struct {
 	PayTableSymbol [info.Symbolamount]string
 	PayTable       [info.Symbolamount][info.Comboresultnum]int
 	LineTable      [info.Linenum][info.Reelamount]int
+	WeightRTP_Module
 	Scatter
 	BonusTable
 }
@@ -28,6 +29,9 @@ type GameStriTable struct {
 	FGStriTablertp95  [info.Reelamount][]int
 	FGStriTablertp965 [info.Reelamount][]int
 	FGStriTablertp99  [info.Reelamount][]int
+
+	NGStriTable2 [info.Reelamount][]int
+	FGStriTable2 [info.Reelamount][]int
 }
 
 type BonusTable struct {
@@ -55,6 +59,7 @@ func Init() {
 	getexcelparsheet(xlsxng, xlsxfg)
 	getPayLineTable(xlsxng, xlsxfg)
 	getScatterInfo()
+	getweight(xlsxng, xlsxfg)
 
 	fmt.Println("LineTable:")
 	fmt.Println(Game.LineTable)
@@ -82,19 +87,41 @@ func Init() {
 			fmt.Println()
 		}
 	}
+
+	printWeight := func(game_status string, stritable_name string, input Weight) {
+		fmt.Println(game_status, stritable_name)
+		fmt.Println("Table Weight")
+		fmt.Println(input.Table)
+		fmt.Println("Bonus Scatter Weight")
+		fmt.Println(input.RespinScatter)
+		fmt.Println()
+
+	}
 	printTable("NG", "965", Game.NGStriTablertp965)
 	printTable("NG", "95", Game.NGStriTablertp95)
 	printTable("NG", "99", Game.NGStriTablertp99)
 	printTable("FG", "965", Game.FGStriTablertp965)
 	printTable("FG", "95", Game.FGStriTablertp95)
 	printTable("FG", "99", Game.FGStriTablertp99)
+	printTable("NG2", "965", Game.NGStriTable2)
+	printTable("FG2", "965", Game.FGStriTable2)
 
+	//Bonus Table
 	printTable("NGBG", "95", Game.NGBonusTable95)
 	printTable("NGBG", "965", Game.NGBonusTable965)
 	printTable("NGBG", "99", Game.NGBonusTable99)
 	printTable("FGBG", "95", Game.FGBonusTable95)
 	printTable("FGBG", "965", Game.FGBonusTable965)
 	printTable("FGBG", "99", Game.FGBonusTable99)
+
+	//Weight
+	printWeight("NGWeight", "95", Game.NGWeight95)
+	printWeight("NGWeight", "965", Game.NGWeight965)
+	printWeight("NGWeight", "99", Game.NGWeight99)
+	printWeight("FGWeight", "95", Game.FGWeight95)
+	printWeight("FGWeight", "965", Game.FGWeight965)
+	printWeight("FGWeight", "99", Game.FGWeight99)
+
 }
 
 func Error(err error) {
@@ -114,7 +141,9 @@ func getexcelparsheet(xlsxng, xlsxfg *excelize.File) {
 		stritable := [info.Reelamount][]int{}
 
 		for i := 0; i < len(rowng); i++ {
-			for k := 0; k < len(rowng[i]); k++ {
+			//fmt.Println(rowng[i])
+
+			for k := 0; k < info.Reelamount; k++ {
 				if rowng[i][k] == "" {
 					continue
 				} else {
@@ -140,6 +169,28 @@ func getexcelparsheet(xlsxng, xlsxfg *excelize.File) {
 		}
 
 	}
+
+	rowng := xlsxng.GetRows("NGTable2")
+
+	stritable := [info.Reelamount][]int{}
+
+	for i := 0; i < len(rowng); i++ {
+		for k := 0; k < len(rowng[i]); k++ {
+			if rowng[i][k] == "" {
+				continue
+			} else {
+				element, err := strconv.Atoi(rowng[i][k])
+				if err != nil {
+					panic(err)
+				}
+				stritable[k] = append(stritable[k], element)
+			}
+
+		}
+	}
+
+	temp := &Game.NGStriTable2
+	*temp = stritable
 
 	///FreeGame///
 
@@ -176,6 +227,28 @@ func getexcelparsheet(xlsxng, xlsxfg *excelize.File) {
 
 	}
 
+	rowfg := xlsxfg.GetRows("FGTable2")
+
+	stritablef := [info.Reelamount][]int{}
+
+	for i := 0; i < len(rowfg); i++ {
+		for k := 0; k < len(rowfg[i]); k++ {
+			if rowfg[i][k] == "" {
+				continue
+			} else {
+				element, err := strconv.Atoi(rowfg[i][k])
+				if err != nil {
+					panic(err)
+				}
+				stritablef[k] = append(stritablef[k], element)
+			}
+
+		}
+	}
+
+	temp2 := &Game.FGStriTable2
+	*temp2 = stritablef
+
 	//NG Bonus
 	for i := 0; i < len(rtproutie); i++ {
 		rowng := xlsxng.GetRows("Bonus" + rtproutie[i])
@@ -205,6 +278,40 @@ func getexcelparsheet(xlsxng, xlsxfg *excelize.File) {
 			*temp = stritable
 		case "99":
 			temp := &Game.BonusTable.NGBonusTable99
+			*temp = stritable
+		}
+
+	}
+
+	//FG Bonus
+	for i := 0; i < len(rtproutie); i++ {
+		rowng := xlsxfg.GetRows("Bonus" + rtproutie[i])
+
+		stritable := [info.Reelamount][]int{}
+
+		for i := 0; i < len(rowng); i++ {
+			for k := 0; k < len(rowng[i]); k++ {
+				if rowng[i][k] == "" {
+					continue
+				} else {
+					element, err := strconv.Atoi(rowng[i][k])
+					if err != nil {
+						panic(err)
+					}
+					stritable[k] = append(stritable[k], element)
+				}
+
+			}
+		}
+		switch rtproutie[i] {
+		case "95":
+			temp := &Game.BonusTable.FGBonusTable95
+			*temp = stritable
+		case "965":
+			temp := &Game.BonusTable.FGBonusTable965
+			*temp = stritable
+		case "99":
+			temp := &Game.BonusTable.FGBonusTable99
 			*temp = stritable
 		}
 
