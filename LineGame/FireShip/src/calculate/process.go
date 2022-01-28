@@ -61,7 +61,11 @@ type FreeGameEachRoundResult struct {
 }
 
 type Bonus struct {
-	Panel [][]int
+	BonusTotalScore int
+	Panel           [][]int
+	PayResult       []scoretools.LineGameEachWay
+	TotalRound      int
+	LockNum         int
 }
 
 func (result *MainGameEachRoundResult) MainGame() {
@@ -103,6 +107,8 @@ func (result *MainGameEachRoundResult) MainGame() {
 	} else {
 		fmt.Println("其他模式")
 	}
+
+	result.LetM1Zero()
 	//計算main game 該次總分
 
 	if info.GameMode == info.GameStatus.WayGame {
@@ -226,7 +232,7 @@ func (result *MainGameEachRoundResult) Check_Enter_Bonus() {
 }
 
 func (result *MainGameEachRoundResult) BonusGame() {
-	fmt.Println("Start Bonus Game")
+	//fmt.Println("Start Bonus Game")
 	//新增的m1 增加一局  新增的scatter 拓展一行
 
 	//觸發後創建盤面
@@ -250,14 +256,16 @@ func (result *MainGameEachRoundResult) BonusGame() {
 	for i := 0; i < growcol_by_enter_scatter; i++ {
 		panel = append(panel, []int{1, info.Space, info.Space, info.Space, info.Space})
 	}
-	fmt.Println("Enter Panel")
-	for _, m := range panel {
-		fmt.Println(m)
-	}
-	fmt.Println()
+
+	// fmt.Println("Enter Panel")
+	// for _, m := range panel {
+	// 	fmt.Println(m)
+	// }
+	// fmt.Println()
+
 	round := 3
 	for r := 0; r < round; r++ {
-		fmt.Println("round", r+1, "totalround:", round)
+		//fmt.Println("round", r+1, "totalround:", round)
 		newpanel := GenerateBonus(result.GameStatus, len(panel))
 
 		var addround bool
@@ -300,14 +308,30 @@ func (result *MainGameEachRoundResult) BonusGame() {
 		}
 		panel = newpanel
 
-		fmt.Println("AfterGrowPanel")
-		for _, m := range panel {
-			fmt.Println(m)
-		}
-		fmt.Println()
-		fmt.Println()
+		// fmt.Println("AfterGrowPanel")
+		// for _, m := range panel {
+		// 	fmt.Println(m)
+		// }
+		// fmt.Println()
+		// fmt.Println()
 	}
 	result.Bonus.Panel = panel
+
+	result.Bonus.PayResult = scoretools.CounBonusScore(panel)
+
+	for i := 0; i < len(result.Bonus.PayResult); i++ {
+		result.Bonus.BonusTotalScore += result.Bonus.PayResult[i].Score
+	}
+
+	result.Bonus.TotalRound = round
+
+	for _, m := range result.Bonus.Panel {
+		for _, k := range m {
+			if k == 1 {
+				result.Bonus.LockNum++
+			}
+		}
+	}
 
 }
 
@@ -335,17 +359,27 @@ func GenerateBonus(gamestatus string, resultlen int) [][]int {
 	switch gamestatus {
 	case info.GameStatus.MainGame:
 		panel = randpanel(public.NGBonusTable)
-		fmt.Println("產生新盤面")
-		for _, m := range panel {
-			fmt.Println(m)
-		}
+		// fmt.Println("產生新盤面")
+		// for _, m := range panel {
+		// 	fmt.Println(m)
+		// }
 	case info.GameStatus.FreeGame:
 		panel = randpanel(public.FGBonusTable)
-		fmt.Println("產生新盤面")
+		// fmt.Println("產生新盤面")
 
-		for _, m := range panel {
-			fmt.Println(m)
-		}
+		// for _, m := range panel {
+		// 	fmt.Println(m)
+		// }
 	}
 	return panel
+}
+
+func (result *MainGameEachRoundResult) LetM1Zero() {
+	if result.BonusTriggerStatus {
+		for i, m := range result.LineGameComboResult {
+			if m.Symbol == 1 {
+				result.LineGameComboResult[i].Score = 0
+			}
+		}
+	}
 }

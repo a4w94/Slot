@@ -18,14 +18,14 @@ const (
 	Col int = 4
 
 	///基本投注額Bet///
-	Bet int = 1
+	Bet int = 40
 
 	PlayBetLevel = 1
 	//玩家下注額
 	PlayerBet int = Bet * PlayBetLevel
 
 	///線數///
-	Linenum int = 1
+	Linenum int = 40
 
 	///獎圖總數+1 沒有零號///
 	Symbolamount int = 14

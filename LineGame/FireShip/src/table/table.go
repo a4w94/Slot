@@ -19,6 +19,7 @@ type GameTabel struct {
 	WeightRTP_Module
 	Scatter
 	BonusTable
+	BonusLineTable [][]int
 }
 
 type GameStriTable struct {
@@ -63,6 +64,10 @@ func Init() {
 
 	fmt.Println("LineTable:")
 	fmt.Println(Game.LineTable)
+	fmt.Println()
+
+	fmt.Println("BonusLineTable:")
+	fmt.Println(Game.BonusLineTable)
 	fmt.Println()
 
 	fmt.Println("PayTable:")

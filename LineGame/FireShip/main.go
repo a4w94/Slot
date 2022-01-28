@@ -11,7 +11,7 @@ type Name struct {
 
 func main() {
 
-	calculate.Simulate(1, 965)
+	calculate.Simulate(100000000, 965)
 
 	// var tmp calculate.MainGameEachRoundResult
 	// tmp.Panel = [info.Col][info.Reelamount]int{

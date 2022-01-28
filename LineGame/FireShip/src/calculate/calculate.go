@@ -20,7 +20,9 @@ var (
 type TotalRoundResultRate struct {
 
 	//Main Game
-	MainGameRTP_with_scatter float64
+	MainGameRTP_with_scatter    float64
+	MainGameRTP_without_scatter float64
+
 	MainGame_ScatterRTP      float64
 	MainGame_TriggeFree_Rate float64
 	MainGame_ScoreRange_Rate [scoretools.MutipelRange]float64
@@ -39,6 +41,16 @@ type TotalRoundResultRate struct {
 
 	//擴充
 	SymbolComboTotalHit Statistic.StatisticTable_Rate
+
+	MainGame_Bonus TotalBonus_Rate
+	FreeGame_Bonus TotalBonus_Rate
+}
+
+type TotalBonus_Rate struct {
+	RTP        float64
+	Enter      float64
+	LockNumber float64
+	Round      float64
 }
 
 type TotalRoundResult struct {
@@ -63,9 +75,20 @@ type TotalRoundResult struct {
 	FreeGameTotal_MultipleRange_Times    [scoretools.MutipelRange]int //倍率區間次數
 	FreeGameTotal_MultipleRange_ScoreAcc [scoretools.MutipelRange]int //倍率區間分數累加
 
+	//Bonus Game
+	MainGame_Bonus TotalBonus
+	FreeGame_Bonus TotalBonus
+
 	//擴充
 	SymbolComboTotalHit Statistic.StatisticTable
 	AllComboPanel       []allcombo.Panel
+}
+
+type TotalBonus struct {
+	TotalScore int
+	Enter      int
+	LockNumber int
+	Round      int
 }
 
 type EachRoundResult struct {
@@ -110,6 +133,8 @@ func (result *TotalRoundResultRate) TotalRate(input TotalRoundResult) {
 	//Main Game
 	//-->total rtp
 	result.MainGameRTP_with_scatter = div(input.MainGameTotalScore, input.TotalBet)
+	//-->without scatter rtp
+	result.MainGameRTP_without_scatter = div(input.MainGameScore_no_Scatter, input.TotalBet)
 	//-->scatter rtp
 	result.MainGame_ScatterRTP = div(input.MainGameScatterScore, input.TotalBet)
 	//-->free game hit rate
@@ -151,6 +176,10 @@ func (result *TotalRoundResultRate) TotalRate(input TotalRoundResult) {
 		}
 	}
 
+	result.MainGame_Bonus.LockNumber = div(input.MainGame_Bonus.LockNumber, input.MainGame_Bonus.Enter)
+	result.MainGame_Bonus.Round = div(input.MainGame_Bonus.Round, input.MainGame_Bonus.Enter)
+	result.MainGame_Bonus.RTP = div(input.MainGame_Bonus.TotalScore, input.TotalBet)
+	result.MainGame_Bonus.Enter = div(input.MainGame_Bonus.Enter, Session)
 }
 
 func (result *TotalRoundResult) TotalRound() {
@@ -159,7 +188,7 @@ func (result *TotalRoundResult) TotalRound() {
 		alllen *= len(m)
 	}
 	// bar := progressbar.Default(int64(alllen))
-	if AllComboControl == true {
+	if AllComboControl {
 		result.AllComboPanel = allcombo.ProductAllPanel()
 		Session = len(result.AllComboPanel)
 	}
@@ -168,7 +197,7 @@ func (result *TotalRoundResult) TotalRound() {
 		// bar.Add(1)
 		var each_Round_Result EachRoundResult
 
-		if AllComboControl == true {
+		if AllComboControl {
 			each_Round_Result.MainGame.Panel = result.AllComboPanel[i].P
 		}
 		each_Round_Result.EachRound()
@@ -178,13 +207,13 @@ func (result *TotalRoundResult) TotalRound() {
 
 		//Main Game
 		//-->no scatter score
-		result.MainGameScore_no_Scatter += each_Round_Result.MainGame.ScoreWithoutScatter
+		result.MainGameScore_no_Scatter += (each_Round_Result.MainGame.ScoreWithoutScatter + each_Round_Result.MainGame.BonusTotalScore)
 		//--> scatter score
 		result.MainGameScatterScore += each_Round_Result.MainGame.Scatterpay
 		//-->total score
-		result.MainGameTotalScore += each_Round_Result.MainGame.TotalScore
+		result.MainGameTotalScore += each_Round_Result.MainGame.TotalScore + each_Round_Result.MainGame.BonusTotalScore
 		//--> trigger free game times
-		if each_Round_Result.MainGame.FreeTriggerStatus == true {
+		if each_Round_Result.MainGame.FreeTriggerStatus {
 			result.MainGameTriggerFreeTotalTimes++
 		}
 		//-->score mutiple range 分數倍率區間
@@ -202,14 +231,14 @@ func (result *TotalRoundResult) TotalRound() {
 		//--> free game retrigger times
 		result.FreeGameRetriggeTotalTimes += each_Round_Result.FreeGame.TotalRetriggerTimes
 		//-->score mutiple range 分數倍率區間
-		if each_Round_Result.MainGame.FreeTriggerStatus == true {
+		if each_Round_Result.MainGame.FreeTriggerStatus {
 			result.FreeGameTotal_MultipleRange_Times[each_Round_Result.FreeGameTotalScoreRange]++
 		}
 		//-->score range 分數倍率區間ＲＴＰ
 		result.FreeGameTotal_MultipleRange_ScoreAcc[each_Round_Result.FreeGameTotalScoreRange] += each_Round_Result.FreeGame.TotalScore
 
 		//Total
-		result.TotalScore += each_Round_Result.MainGame.TotalScore + each_Round_Result.FreeGame.TotalScore
+		result.TotalScore += each_Round_Result.MainGame.TotalScore + each_Round_Result.FreeGame.TotalScore + each_Round_Result.MainGame.BonusTotalScore
 		result.EveryScoreRecord = append(result.EveryScoreRecord, each_Round_Result.MainGame.TotalScore+each_Round_Result.FreeGame.TotalScore)
 
 		//擴充
@@ -223,10 +252,20 @@ func (result *TotalRoundResult) TotalRound() {
 			fmt.Println("Wrong Mode")
 		}
 
+		//Bonus
+		//NG
+		result.MainGame_Bonus.TotalScore += each_Round_Result.MainGame.Bonus.BonusTotalScore
+		result.MainGame_Bonus.LockNumber += each_Round_Result.MainGame.LockNum
+		result.MainGame_Bonus.Round += each_Round_Result.MainGame.Bonus.TotalRound
+		if each_Round_Result.MainGame.BonusTriggerStatus {
+			result.MainGame_Bonus.Enter++
+		}
 	}
 	for i, m := range result.SymbolComboTotalHit.NGHit {
 		fmt.Println(table.Game.PayTableSymbol[i], m)
 	}
+
+	fmt.Println("BonusScore:", result.MainGame_Bonus.TotalScore)
 
 }
 
@@ -235,10 +274,10 @@ func (result *EachRoundResult) EachRound() {
 	result.MainGame.MainGame()
 
 	if result.MainGame.BonusTriggerStatus {
-		fmt.Println("Enter Bonus")
+		//fmt.Println("Enter Bonus")
 		StartBonus(&result.MainGame).BonusGame()
-		fmt.Println("結束盤面")
-		fmt.Println(result.MainGame.Bonus.Panel)
+		// fmt.Println("結束盤面")
+		// fmt.Println(result.MainGame.Bonus.Panel)
 
 	}
 
@@ -249,6 +288,9 @@ func (result *EachRoundResult) EachRound() {
 	}
 
 	//result.MainGame.PrintEachRoudResult()
+	if result.MainGame.Line_Game_Combo.LineGameComboResult[0].Symbol == info.Wild && result.MainGame.Line_Game_Combo.LineGameComboResult[0].Combo == 3 {
+		//result.MainGame.PrintEachRoudResult()
+	}
 	if result.MainGame.TotalScore > 0 {
 		//result.MainGame.PrintEachRoudResult()
 	}

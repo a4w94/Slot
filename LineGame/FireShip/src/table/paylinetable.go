@@ -55,6 +55,17 @@ func getPayLineTable(xlsxng, xlsxfg *excelize.File) {
 		temp2[i] = rowpaytable[i][0]
 	}
 
+	temp3 := &Game.BonusLineTable
+	rowbglinetable := xlsxng.GetRows("BonusLineTable")
+	for i := 0; i < 80; i++ {
+		var arr []int
+		for k := 1; k < 6; k++ {
+			ele, _ := strconv.Atoi(rowbglinetable[i][k])
+			arr = append(arr, ele)
+		}
+		*temp3 = append(*temp3, arr)
+	}
+
 }
 
 func getScatterInfo() {

@@ -38,13 +38,13 @@ func (result *TotalRoundResultRate) PrintResult() {
 
 		func() {
 			data := [][]string{
-				[]string{"Main Game Without Scatter RTP", toString(result.MainGameRTP_with_scatter - result.MainGame_ScatterRTP)},
+				[]string{"Main Game Without Scatter RTP", toString(result.MainGameRTP_without_scatter)},
 				[]string{"Free Game Hit Rate", toString(result.MainGame_TriggeFree_Rate)},
 				[]string{"Scatter RTP", toString(result.MainGame_ScatterRTP)},
 			}
 
 			table := tablewriter.NewWriter(os.Stdout)
-			table.SetHeader([]string{"Name", "Rate%"})
+			table.SetHeader([]string{"Name", "RTP%"})
 
 			table.SetRowLine(true)
 			table.AppendBulk(data)
@@ -176,12 +176,34 @@ func (result *TotalRoundResultRate) PrintResult() {
 		}()
 
 	}
+
+	NGBonusGame := func() {
+		func() {
+			data := [][]string{
+				[]string{"Main Game Bonus RTP", toString(result.MainGame_Bonus.RTP)},
+				[]string{"進入重轉遊戲機率", toString(result.MainGame_Bonus.Enter)},
+				[]string{"平均鎖定數", strconv.FormatFloat(result.MainGame_Bonus.LockNumber, 'f', 4, 64)},
+				[]string{"平均局數", strconv.FormatFloat(result.MainGame_Bonus.Round, 'f', 4, 64)},
+			}
+
+			table := tablewriter.NewWriter(os.Stdout)
+			table.SetHeader([]string{"Name", "RTP%"})
+
+			table.SetRowLine(true)
+			table.AppendBulk(data)
+
+			table.Render() // Send output
+		}()
+	}
 	fmt.Println("===========> Total <===================================")
 	RTPPrint()
 	fmt.Println()
 
 	fmt.Println("===========> Main Game <===============================")
 	MainGame()
+	fmt.Println()
+	fmt.Println("===========> Main Game-Bonus <===============================")
+	NGBonusGame()
 	fmt.Println()
 
 	fmt.Println("===========> Free Game <===============================")

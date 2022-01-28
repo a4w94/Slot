@@ -151,3 +151,30 @@ func (result *Way_Game_Combo) CombojudgeWayGame(panel [info.Col][info.Reelamount
 	}
 
 }
+
+func CounBonusScore(panel [][]int) []LineGameEachWay {
+	var result []LineGameEachWay
+
+	for i := 0; i < len(panel)*10; i++ {
+		var tmp LineGameEachWay
+		for j := 0; j < info.Reelamount; j++ {
+			tmp.ResultLine[j] = panel[table.Game.BonusLineTable[i][j]][j]
+		}
+
+		tmp.Symbol = 1
+		for j, m := range tmp.ResultLine {
+			if m != 1 {
+				tmp.Combo = j
+				break
+			} else {
+				tmp.Combo = j + 1
+			}
+		}
+		tmp.Score = table.Game.PayTable[tmp.Symbol][tmp.Combo] * info.PlayBetLevel
+
+		result = append(result, tmp)
+
+	}
+
+	return result
+}
