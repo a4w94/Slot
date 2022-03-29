@@ -134,6 +134,7 @@ func (result *TotalRoundResultRate) PrintResult() {
 		func() {
 			data := [][]string{
 				[]string{"Retrigger Hit Rate", toString(result.FreeGame_Retrigger_Rate)},
+				[]string{"Avg FG Round", toString(result.FreeGame_Avg_Round)},
 				[]string{"Scatter RTP", toString(result.FreeGame_ScatterRTP)},
 			}
 

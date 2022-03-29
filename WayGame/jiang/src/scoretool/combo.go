@@ -6,7 +6,7 @@ import (
 )
 
 type Way_Game_Combo struct {
-	WayGameComboResult [info.Col]WayGameEachWay
+	WayGameComboResult []WayGameEachWay
 }
 type WayGameEachWay struct {
 	Symbol       int
@@ -112,42 +112,65 @@ func (result *Line_Game_Combo) CombojudgeLineGame(panel [info.Col][info.Reelamou
 
 func (result *Way_Game_Combo) CombojudgeWayGame(panel [info.Col][info.Reelamount]int) {
 
-	var symbol int
+	var countsymbol [info.Symbolamount][info.Reelamount]int
 
 	for i := 0; i < info.Col; i++ {
-		var tmp WayGameEachWay
 
-		symbol = panel[i][0]
-		var combo int
-		linequantity := 1
-		for j := 1; j < info.Reelamount; j++ {
-			eachquantity := 0
-			for k := 0; k < info.Col; k++ {
-				if panel[k][j] == symbol || panel[k][j] == info.Wild {
-					eachquantity = eachquantity + 1
-				}
-			}
-
-			if eachquantity == 0 {
-				linequantity = linequantity * 1
-			} else {
-				linequantity = linequantity * eachquantity
-			}
-
-			if eachquantity == 0 {
-				combo = j
-				break
-			} else {
-				combo = 5
-			}
+		for j := 0; j < info.Reelamount; j++ {
+			countsymbol[panel[i][j]][j]++
 		}
 
-		tmp.Symbol = symbol
-		tmp.Combo = combo
-		tmp.Linequantity = linequantity
+	}
 
-		result.WayGameComboResult[i] = tmp
+	for i := 0; i < len(countsymbol); i++ {
+		var tmp WayGameEachWay
+		tmp.Symbol = i
+		if i != info.Wild {
+		count:
+			for k := 0; k < len(countsymbol[i]); k++ {
+				linequantity := countsymbol[i][k] + countsymbol[info.Wild][k]
+				if k == 0 {
+					if linequantity != 0 {
+						tmp.Linequantity = linequantity
+						tmp.Combo = k + 1
+					}
+				} else {
+					if linequantity != 0 {
+						tmp.Linequantity *= linequantity
+						tmp.Combo = k + 1
+					} else {
+						break count
+					}
 
+				}
+
+			}
+		} else {
+		countwild:
+			for k := 0; k < len(countsymbol[i]); k++ {
+				linequantity := countsymbol[i][k]
+				if k == 0 {
+					if linequantity != 0 {
+						tmp.Linequantity = linequantity
+						tmp.Combo = k + 1
+					}
+				} else {
+					if linequantity != 0 {
+						tmp.Linequantity *= linequantity
+						tmp.Combo = k + 1
+					} else {
+						break countwild
+					}
+
+				}
+
+			}
+
+		}
+		if tmp.Linequantity != 0 && tmp.Symbol != info.Scatter {
+			result.WayGameComboResult = append(result.WayGameComboResult, tmp)
+		}
+		//fmt.Println("計算waygame", tmp)
 	}
 
 }

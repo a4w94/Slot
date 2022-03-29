@@ -26,6 +26,8 @@ type MainGameEachRoundResult struct {
 
 }
 
+
+
 type FreeGameTotalResult struct {
 	TotalSession int
 	TotalScore   int

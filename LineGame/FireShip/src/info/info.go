@@ -5,7 +5,7 @@ import "fmt"
 const (
 
 	///遊戲名稱///
-	GameName string = "舞動峇里島"
+	GameName string = "火燒連環船"
 
 	///遊戲模式///
 	GameMode string = "LineGame"

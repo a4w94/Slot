@@ -32,6 +32,7 @@ type TotalRoundResultRate struct {
 	FreeGameRTP_with_scatter float64
 	FreeGame_ScatterRTP      float64
 	FreeGame_Retrigger_Rate  float64
+	FreeGame_Avg_Round       float64
 	FreeGame_ScoreRange_Rate [scoretools.MutipelRange]float64
 	FreeGame_ScoreRange_RTP  [scoretools.MutipelRange]float64
 
@@ -74,6 +75,7 @@ type TotalRoundResult struct {
 	FreeGameRetriggeTotalTimes           int                          //retrigger次數
 	FreeGameTotal_MultipleRange_Times    [scoretools.MutipelRange]int //倍率區間次數
 	FreeGameTotal_MultipleRange_ScoreAcc [scoretools.MutipelRange]int //倍率區間分數累加
+	FreeGameTotal_Round                  int                          //Free Game總遊玩局數
 
 	//Bonus Game
 	MainGame_Bonus TotalBonus
@@ -151,12 +153,14 @@ func (result *TotalRoundResultRate) TotalRate(input TotalRoundResult) {
 	//-->scatter rtp
 	result.FreeGame_ScatterRTP = div(input.FreeGameScatterScore, input.TotalBet)
 	//-->Retrigger rate
-	result.FreeGame_Retrigger_Rate = div(input.FreeGameRetriggeTotalTimes, input.MainGameTriggerFreeTotalTimes)
+	result.FreeGame_Retrigger_Rate = div(input.FreeGameRetriggeTotalTimes, input.FreeGameTotal_Round)
 	//-->分數倍率區間頻率與ＲＴＰ
 	for i := 0; i < scoretools.MutipelRange; i++ {
 		result.FreeGame_ScoreRange_Rate[i] = div(input.FreeGameTotal_MultipleRange_Times[i], input.MainGameTriggerFreeTotalTimes)
 		result.FreeGame_ScoreRange_RTP[i] = div(input.FreeGameTotal_MultipleRange_ScoreAcc[i], input.TotalBet)
 	}
+
+	result.FreeGame_Avg_Round = div(input.FreeGameTotal_Round, input.MainGameTriggerFreeTotalTimes)
 
 	//Total
 	result.TotalRTP = div(input.TotalScore, input.TotalBet)
@@ -236,6 +240,8 @@ func (result *TotalRoundResult) TotalRound() {
 		}
 		//-->score range 分數倍率區間ＲＴＰ
 		result.FreeGameTotal_MultipleRange_ScoreAcc[each_Round_Result.FreeGameTotalScoreRange] += each_Round_Result.FreeGame.TotalScore
+		//-->fg 總遊玩局數加總
+		result.FreeGameTotal_Round += each_Round_Result.FreeGame.TotalSession
 
 		//Total
 		result.TotalScore += each_Round_Result.MainGame.TotalScore + each_Round_Result.FreeGame.TotalScore + each_Round_Result.MainGame.BonusTotalScore

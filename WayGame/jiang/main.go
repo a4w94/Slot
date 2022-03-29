@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"math/rand"
 	"package/src/table"
+	"time"
 )
 
 type Name struct {
@@ -10,8 +13,15 @@ type Name struct {
 }
 
 func main() {
+
+	rand.Seed(time.Now().Unix())
 	table.Init()
-	//calculate.Simulate(1, 965)
+	tmp := table.RandomResult{}
+	tmp.RandResult(table.Game.RTP965.MainGame_Panel_Grow)
+	fmt.Println(table.Game.RTP965.MainGame_Panel_Grow)
+	fmt.Println(tmp)
+
+	//calculate.Simulate(1000000, 965)
 	//製圖
 	//chart.WriteDataChart()
 

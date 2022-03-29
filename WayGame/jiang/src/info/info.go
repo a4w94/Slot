@@ -18,7 +18,7 @@ const (
 	Col int = 3
 
 	///基本投注額Bet///
-	Bet int = 1
+	Bet int = 50
 
 	PlayBetLevel = 1
 	//玩家下注額

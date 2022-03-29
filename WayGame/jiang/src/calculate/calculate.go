@@ -156,7 +156,7 @@ func (result *TotalRoundResult) TotalRound() {
 		alllen *= len(m)
 	}
 	bar := progressbar.Default(int64(alllen))
-	if AllComboControl == true {
+	if AllComboControl {
 		result.AllComboPanel = allcombo.ProductAllPanel()
 		Session = len(result.AllComboPanel)
 	}
@@ -165,7 +165,7 @@ func (result *TotalRoundResult) TotalRound() {
 		bar.Add(1)
 		var each_Round_Result EachRoundResult
 
-		if AllComboControl == true {
+		if AllComboControl {
 			each_Round_Result.MainGame.Panel = result.AllComboPanel[i].P
 		}
 		each_Round_Result.EachRound()
@@ -181,7 +181,7 @@ func (result *TotalRoundResult) TotalRound() {
 		//-->total score
 		result.MainGameTotalScore += each_Round_Result.MainGame.TotalScore
 		//--> trigger free game times
-		if each_Round_Result.MainGame.FreeTriggerStatus == true {
+		if each_Round_Result.MainGame.FreeTriggerStatus {
 			result.MainGameTriggerFreeTotalTimes++
 		}
 		//-->score mutiple range 分數倍率區間
@@ -199,7 +199,7 @@ func (result *TotalRoundResult) TotalRound() {
 		//--> free game retrigger times
 		result.FreeGameRetriggeTotalTimes += each_Round_Result.FreeGame.TotalRetriggerTimes
 		//-->score mutiple range 分數倍率區間
-		if each_Round_Result.MainGame.FreeTriggerStatus == true {
+		if each_Round_Result.MainGame.FreeTriggerStatus {
 			result.FreeGameTotal_MultipleRange_Times[each_Round_Result.FreeGameTotalScoreRange]++
 		}
 		//-->score range 分數倍率區間ＲＴＰ
@@ -231,7 +231,7 @@ func (result *EachRoundResult) EachRound() {
 
 	result.MainGame.MainGame()
 
-	if result.MainGame.FreeTriggerStatus == true {
+	if result.MainGame.FreeTriggerStatus {
 		result.FreeGame.TotalSession = result.MainGame.Fgsession
 		result.FreeGame.FreeGame()
 
