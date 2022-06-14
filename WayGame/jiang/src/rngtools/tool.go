@@ -41,11 +41,11 @@ func GameRng(gameStatus string) [info.Col][info.Reelamount]int {
 }
 
 ///統計盤面scatter個數///
-func CountPanelScatterAmount(panel [info.Col][info.Reelamount]int) int {
+func CountPanelScatterAmount(panel [][info.Reelamount]int) int {
 
 	var scatteramount int
 
-	for i := 0; i < info.Col; i++ {
+	for i := 0; i < len(panel); i++ {
 
 		for k := 0; k < info.Reelamount; k++ {
 			if panel[i][k] == info.Scatter {

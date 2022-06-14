@@ -110,11 +110,11 @@ func (result *Line_Game_Combo) CombojudgeLineGame(panel [info.Col][info.Reelamou
 
 }
 
-func (result *Way_Game_Combo) CombojudgeWayGame(panel [info.Col][info.Reelamount]int) {
+func (result *Way_Game_Combo) CombojudgeWayGame(panel [][info.Reelamount]int) {
 
 	var countsymbol [info.Symbolamount][info.Reelamount]int
 
-	for i := 0; i < info.Col; i++ {
+	for i := 0; i < len(panel); i++ {
 
 		for j := 0; j < info.Reelamount; j++ {
 			countsymbol[panel[i][j]][j]++

@@ -36,7 +36,7 @@ func WriteDataChart() {
 }
 
 func RTPModuleData(p *charts.Page) *charts.Page {
-	testsession := 10000
+	testsession := 1000000
 
 	var result Data
 	result.RTP965 = calculate.Simulate(testsession, 965)

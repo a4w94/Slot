@@ -92,7 +92,7 @@ func (result *PlayerSimResultRate) CalPlayerSimRate(input PlayerSimResult) {
 
 func (result *Player) InitPlayer() {
 	result.BetLevel = 1
-	result.InitMoney = 2000
+	result.InitMoney = 5000
 
 	result.Bet = result.BetLevel * info.Bet
 	result.AccBet = 0

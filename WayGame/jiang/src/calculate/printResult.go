@@ -39,6 +39,7 @@ func (result *TotalRoundResultRate) PrintResult() {
 		func() {
 			data := [][]string{
 				[]string{"Main Game Without Scatter RTP", toString(result.MainGameRTP_with_scatter - result.MainGame_ScatterRTP)},
+				[]string{"Main Game Bonus RTP", toString(result.MainGameBonusTotalRTP)},
 				[]string{"Free Game Hit Rate", toString(result.MainGame_TriggeFree_Rate)},
 				[]string{"Scatter RTP", toString(result.MainGame_ScatterRTP)},
 			}
@@ -135,6 +136,8 @@ func (result *TotalRoundResultRate) PrintResult() {
 			data := [][]string{
 				[]string{"Retrigger Hit Rate", toString(result.FreeGame_Retrigger_Rate)},
 				[]string{"Scatter RTP", toString(result.FreeGame_ScatterRTP)},
+				[]string{"Bonus RTP", toString(result.FreeGameBonusTotalRTP)},
+				[]string{"中獎率", toString(result.FreeGame_Score_Hit_Rate)},
 			}
 
 			table := tablewriter.NewWriter(os.Stdout)
@@ -188,9 +191,45 @@ func (result *TotalRoundResultRate) PrintResult() {
 	FreeGame()
 	fmt.Println()
 
+	fmt.Println("===========> Main Game 補充<===============================")
+	fmt.Println("拓展機率:", result.MainGameGrowRate)
+	fmt.Println("拓展RTP:", result.MainGameGrowRTP)
+	fmt.Println("平均bonus 每個分數:", result.MainGameBonusAvgScore)
+	fmt.Println("bonus hit rate:", result.MainGameBonusHitRate)
+	fmt.Println()
+
+	fmt.Println("===========> Free Game 補充<===============================")
+	fmt.Println("拓展機率:", result.FreeGameGrowRate)
+	fmt.Println("bonus hit rate:", result.FreeGameBonusHitRate)
+	fmt.Println()
+	fmt.Println("===========> 數據<===============================")
+	// fmt.Println("得分平均:", result.Math_Data.Avg)
+	// fmt.Println("得分變異數:", result.Math_Data.Std)
+	fmt.Println("得分標準差:", result.Math_Data.Var)
+
+	fmt.Println()
+
 }
 
 func (result MainGameEachRoundResult) PrintEachRoudResult() {
+	t := reflect.TypeOf(result)
+	v := reflect.ValueOf(result)
+	for i := 0; i < t.NumField(); i++ {
+		fmt.Println(t.Field(i).Name, ":", v.Field(i))
+	}
+	fmt.Println()
+}
+
+func (result FreeGameEachRoundResult) PrintEachRoudResult() {
+	t := reflect.TypeOf(result)
+	v := reflect.ValueOf(result)
+	for i := 0; i < t.NumField(); i++ {
+		fmt.Println(t.Field(i).Name, ":", v.Field(i))
+	}
+	fmt.Println()
+}
+
+func (result FreeGameTotalResult) PrintEachRoudResult() {
 	t := reflect.TypeOf(result)
 	v := reflect.ValueOf(result)
 	for i := 0; i < t.NumField(); i++ {

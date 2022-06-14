@@ -38,7 +38,7 @@ const (
 	///Scatter 代號///
 	Scatter int = 12
 
-	// Bonus int = 11
+	Bonus int = 11
 
 	///理論值ＲＴＰ///
 	ThmRTP float32 = 0.965

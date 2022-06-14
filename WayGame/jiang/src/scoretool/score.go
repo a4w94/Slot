@@ -56,3 +56,83 @@ func (scatterinfo *ScatterResult) ScatterResult(gameStatus string) {
 	}
 
 }
+
+type Bonus struct {
+	Amount int
+	Score  int
+	Combo  int
+}
+
+func BounScore(gameStatus string, panel [][info.Reelamount]int) Bonus {
+	var result Bonus
+
+	var count2wild int
+
+	for i := 0; i < 2; i++ {
+		for j := 0; j < len(panel); j++ {
+			if panel[j][i] == info.Wild {
+				count2wild++
+			}
+		}
+	}
+
+	if count2wild == 2 {
+
+		//fmt.Println("2wild")
+		var eachReelBonusAmount = [info.Reelamount]int{1, 1, 0, 0, 0}
+
+	countbonus:
+		for i := 2; i < info.Reelamount; i++ {
+			//fmt.Println("Reel", i)
+			if eachReelBonusAmount[i-1] == 0 {
+				break countbonus
+			}
+			var BonusAmount int
+			for j := 0; j < len(panel); j++ {
+				if panel[j][i] == info.Bonus {
+					BonusAmount++
+					var random table.RandomResult
+
+					//計算bonus 個數
+					result.Amount++
+
+					//計算分數
+					if gameStatus == info.GameStatus.MainGame {
+
+						random.RandResult(table.Game.RTP965.MainGame_Bonus)
+					} else if gameStatus == info.GameStatus.FreeGame {
+						random.RandResult(table.Game.RTP965.FreeGame_Bonus)
+
+					}
+					score := random.ReturnMultiple * float64(info.PlayerBet)
+					result.Score += int(score)
+					// fmt.Println(score, result.Score)
+					// fmt.Println("bonus random", random)
+
+				}
+			}
+			eachReelBonusAmount[i] = BonusAmount
+			if BonusAmount > 0 {
+				result.Combo = i + 1
+			}
+			//fmt.Println(BonusAmount)
+		}
+
+	}
+
+	//fmt.Println("bonus result", result)
+	return result
+}
+
+func FreeGameMultipe() table.RandomResult {
+	var random table.RandomResult
+
+	random.RandResult(table.Game.RTP965.FreeGameMultiple_1)
+	//fmt.Println(table.Game.RTP965.FreeGameMultiple_1)
+	if random.ReturnMultiple == -1 {
+		//fmt.Println(table.Game.RTP965.FreeGameMultiple_2)
+		random.RandResult(table.Game.RTP965.FreeGameMultiple_2)
+	}
+
+	return random
+}

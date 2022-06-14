@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	info "package/src/info"
+	"reflect"
 	"strconv"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -61,8 +62,12 @@ func Init() {
 	fmt.Println()
 
 	fmt.Println("Weight:")
-	fmt.Println(Game.Weight_Module.RTP965)
-
+	m := Game.Weight_Module.RTP965
+	t := reflect.TypeOf(m)
+	v := reflect.ValueOf(m)
+	for i := 0; i < t.NumField(); i++ {
+		fmt.Println(t.Field(i).Name, v.Field(i))
+	}
 	printTable := func(game_status string, stritable_name string, input [info.Reelamount][]int) {
 		fmt.Println(game_status, stritable_name)
 		for _, j := range input {
